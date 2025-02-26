@@ -8,6 +8,7 @@ import rl "vendor:raylib"
 
 WIN_WIDTH :: 1800
 WIN_HEIGHT :: 1000
+STEP :: 0.5
 
 Direction :: enum {
     Up = 0,
@@ -30,6 +31,8 @@ Segment :: struct {
 
 dragon: [dynamic]Segment
 SEGMENT_SIZE: f32
+
+origin_x, origin_y: f32
 
 // WARNING: 'segm.' is translated implicitly to '(segm^).'
 
@@ -66,7 +69,10 @@ step :: proc() {
 main :: proc() {
     rl.InitWindow(WIN_WIDTH, WIN_HEIGHT, "Dragon Curve")
 
-    SEGMENT_SIZE = 20
+    SEGMENT_SIZE = 10
+
+    origin_x = 0
+    origin_y = 0
 
     append(&dragon, Segment { 400, 400, Direction.Up })
 
@@ -75,13 +81,28 @@ main :: proc() {
             step()
         }
         
-        // TODO: recalculate
-        if rl.IsKeyPressed(rl.KeyboardKey.W) {
-            SEGMENT_SIZE += 1
+        if rl.IsKeyDown(rl.KeyboardKey.W) {
+            for i in 0 ..< len(dragon) {
+                dragon[i].start_y -= STEP;
+            }
         }
-        else if rl.IsKeyPressed(rl.KeyboardKey.S) {
-            SEGMENT_SIZE -= 1
+        else if rl.IsKeyDown(rl.KeyboardKey.S) {
+            for i in 0 ..< len(dragon) {
+                dragon[i].start_y += STEP;
+            }
         }
+        else if rl.IsKeyDown(rl.KeyboardKey.A) {
+            for i in 0 ..< len(dragon) {
+                dragon[i].start_x -= STEP;
+            }
+        }
+        else if rl.IsKeyDown(rl.KeyboardKey.D) {
+            for i in 0 ..< len(dragon) {
+                dragon[i].start_x += STEP;
+            }
+        }
+
+        // TODO: better movement + scrolling
 
         rl.BeginDrawing()
         rl.ClearBackground(rl.GRAY)
